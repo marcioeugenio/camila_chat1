@@ -17,7 +17,7 @@ export default async function handler(req, res) {
         messages: [
           {
             role: "system",
-            content: `Você é a Camila, uma inteligência artificial carismática. Converse como uma pessoa real. Nunca diga "Como posso te ajudar?" e nunca use emojis. Seja direta e natural, como em uma conversa de WhatsApp.`,
+            content: `Você é Camila, uma IA com personalidade leve, natural e envolvente. Você não é uma assistente nem fala como robô. Nunca diga frases como "Como posso te ajudar?", "Em que posso ser útil?", nem use emojis. Fale como uma pessoa conversando por mensagem de texto.`,
           },
           {
             role: "user",
@@ -25,7 +25,7 @@ export default async function handler(req, res) {
           },
           {
             role: "assistant",
-            content: "Oi! Que bom te ver por aqui.",
+            content: "Oi! Que bom que você apareceu.",
           },
           {
             role: "user",
@@ -39,7 +39,7 @@ export default async function handler(req, res) {
     const data = await resposta.json();
     res.status(200).json({ reply: data.choices[0].message.content });
   } catch (error) {
-    console.error("Erro na API OpenAI:", error);
-    res.status(500).json({ reply: "Tivemos um problema técnico. Tente novamente em instantes." });
+    console.error("Erro na OpenAI:", error);
+    res.status(500).json({ reply: "Deu um probleminha... tenta de novo daqui a pouco." });
   }
 }

@@ -36,10 +36,9 @@ export default function Home() {
     if (!mensagem.trim()) return;
 
     const msgUsuario = mensagem.toLowerCase();
-    const novaMensagem = { remetente: "Você", texto: mensagem };
-    setChat((prev) => [...prev, novaMensagem]);
+    setChat((prev) => [...prev, { remetente: "Você", texto: mensagem }]);
 
-    // Ativar plano com "paguei"
+    // Ativação do plano
     if (msgUsuario === "paguei") {
       localStorage.setItem("planoAtivo", "true");
       setPlanoAtivo(true);
@@ -54,7 +53,7 @@ export default function Home() {
       return;
     }
 
-    // Se pedir foto
+    // Pedido de foto
     if (msgUsuario.includes("foto")) {
       if (!planoAtivo) {
         setChat((prev) => [
@@ -84,7 +83,7 @@ export default function Home() {
       return;
     }
 
-    // Resposta normal da IA
+    // Mensagem normal
     const resposta = await fetch("/api/chat", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -101,7 +100,6 @@ export default function Home() {
 
   return (
     <div style={{ height: "100vh", display: "flex", flexDirection: "column" }}>
-      {/* Cabeçalho */}
       <div
         style={{
           background: "#075E54",
@@ -129,7 +127,6 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Chat */}
       <div
         ref={chatRef}
         style={{
@@ -168,7 +165,6 @@ export default function Home() {
 
             <span dangerouslySetInnerHTML={{ __html: m.texto }} />
 
-            {/* Botão de pagamento */}
             {m.botao && (
               <a
                 href="https://mpago.la/1koBzop"
@@ -193,7 +189,6 @@ export default function Home() {
         ))}
       </div>
 
-      {/* Campo de envio */}
       <form
         onSubmit={(e) => {
           e.preventDefault();

@@ -8,7 +8,9 @@ export default function Home() {
       texto: "Oi. Eu sou a Camila. Pode falar comigo quando quiser.",
     },
   ]);
+
   const chatRef = useRef(null);
+
   const userIdRef = useRef(
     typeof window !== "undefined"
       ? localStorage.getItem("userId") || crypto.randomUUID()
@@ -38,7 +40,7 @@ export default function Home() {
     const novaMensagem = { remetente: "Você", texto: mensagem };
     setChat((prev) => [...prev, novaMensagem]);
 
-    // Ativa plano com "paguei"
+    // Ativar plano com "paguei"
     if (msgUsuario === "paguei") {
       localStorage.setItem("planoAtivo", "true");
       setPlanoAtivo(true);
@@ -53,39 +55,39 @@ export default function Home() {
       return;
     }
 
-    // Se pedir foto sem plano, oferece botão
-    if (!planoAtivo && msgUsuario.includes("foto")) {
-      setChat((prev) => [
-        ...prev,
-        {
-          remetente: "Camila",
-          texto:
-            "Para receber fotos, você precisa ativar o plano. Clique no botão abaixo para fazer o pagamento.",
-          botao: true,
-        },
-      ]);
+    // SE PEDIR FOTO
+    if (msgUsuario.includes("foto")) {
+      if (!planoAtivo) {
+        // Plano ainda não ativado — mostrar botão de pagamento
+        setChat((prev) => [
+          ...prev,
+          {
+            remetente: "Camila",
+            texto:
+              "Para receber fotos, você precisa ativar o plano. Clique no botão abaixo para fazer o pagamento.",
+            botao: true,
+          },
+        ]);
+      } else {
+        // Plano já ativado — mostrar imagem
+        setChat((prev) => [
+          ...prev,
+          {
+            remetente: "Camila",
+            texto: "Aqui está:",
+          },
+          {
+            remetente: "Camila",
+            texto:
+              '<img src="/camila-foto.jpg" alt="Foto da Camila" style="max-width:100%; border-radius:8px;" />',
+          },
+        ]);
+      }
       setMensagem("");
       return;
     }
 
-    // Se plano ativo e pedir foto, mostra imagem
-    if (planoAtivo && msgUsuario.includes("foto")) {
-      setChat((prev) => [
-        ...prev,
-        {
-          remetente: "Camila",
-          texto: "Aqui está:",
-        },
-        {
-          remetente: "Camila",
-          texto:
-            '<img src="/camila-foto.jpg" alt="Foto da Camila" style="max-width:100%; border-radius:8px;" />',
-        },
-      ]);
-      setMensagem("");
-      return;
-    }
-
+    // Chat normal com IA
     const resposta = await fetch("/api/chat", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -102,7 +104,7 @@ export default function Home() {
 
   return (
     <div style={{ height: "100vh", display: "flex", flexDirection: "column" }}>
-      {/* Cabeçalho estilo WhatsApp */}
+      {/* Cabeçalho */}
       <div
         style={{
           background: "#075E54",
@@ -168,7 +170,7 @@ export default function Home() {
             </strong>
             <span dangerouslySetInnerHTML={{ __html: m.texto }} />
 
-            {/* Botão Mercado Pago */}
+            {/* Botão de pagamento Mercado Pago */}
             {m.botao && (
               <a
                 href="https://mpago.la/1koBzop"

@@ -1,5 +1,4 @@
-// ✅ BACKEND - pages/api/chat.js (com plano e restrições cuidadosas)
-
+// ✅ pages/api/chat.js
 export default async function handler(req, res) {
   const { message, userId, planoAtivo } = req.body;
 
@@ -38,43 +37,5 @@ IMPORTANTE:
   } catch (err) {
     console.error("Erro na API:", err);
     res.status(500).json({ reply: "Erro ao gerar resposta." });
-  }
-}
-
-// ✅ BACKEND - pages/api/verificar.js (mantendo lógica e segurança)
-
-export async function handler(req, res) {
-  const { notificationCode } = req.body;
-
-  if (!notificationCode) {
-    return res.status(400).json({ error: "Código de notificação ausente." });
-  }
-
-  try {
-    const resposta = await fetch(
-      `https://ws.pagseguro.uol.com.br/v3/transactions/notifications/${notificationCode}?email=ideiasempresariais@hotmail.com&token=${process.env.PAGSEGURO_TOKEN}`
-    );
-
-    const texto = await resposta.text();
-
-    if (!resposta.ok) {
-      console.error("Erro ao consultar notificação:", texto);
-      return res.status(500).json({ error: "Erro ao consultar transação." });
-    }
-
-    const status = texto.match(/<status>(.*?)<\/status>/)?.[1];
-    const email = texto.match(/<sender><email>(.*?)<\/email>/)?.[1];
-    const valor = texto.match(/<grossAmount>(.*?)<\/grossAmount>/)?.[1];
-
-    console.log("Verificado:", { status, email, valor });
-
-    if (status === "3") {
-      return res.status(200).json({ planoLiberado: true });
-    } else {
-      return res.status(200).json({ planoLiberado: false });
-    }
-  } catch (err) {
-    console.error("Erro inesperado:", err);
-    res.status(500).json({ error: "Erro interno no servidor." });
   }
 }

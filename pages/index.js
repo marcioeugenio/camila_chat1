@@ -1,4 +1,4 @@
-// ✅ FRONTEND - pages/index.js com imagens ampliáveis e link atualizado
+// ✅ FRONTEND - pages/index.js com desbloqueio flexível
 import { useState, useEffect, useRef } from "react";
 
 export default function Home() {
@@ -37,10 +37,20 @@ export default function Home() {
   const enviar = async () => {
     if (!mensagem.trim()) return;
 
-    const msg = mensagem.toLowerCase();
+    const msg = mensagem.trim().toLowerCase();
+
     setChat((prev) => [...prev, { remetente: "Você", texto: mensagem }]);
 
-    if (msg === "paguei") {
+    const frasesLiberaPlano = [
+      "paguei",
+      "já paguei",
+      "eu paguei",
+      "paguei sim",
+      "paguei agora",
+      "acabei de pagar"
+    ];
+
+    if (frasesLiberaPlano.some(f => msg.includes(f))) {
       localStorage.setItem("planoAtivo", "true");
       setPlanoAtivo(true);
       setChat((prev) => [
@@ -95,7 +105,23 @@ export default function Home() {
     });
 
     const data = await resposta.json();
-    setChat((prev) => [...prev, { remetente: "Camila", texto: data.reply }]);
+    let textoResposta = data.reply?.toLowerCase() || "";
+    const frasesProibidas = [
+      "como posso te ajudar",
+      "estou aqui para ajudar",
+      "estou aqui para te ajudar",
+      "quer que eu te mostre",
+      "posso te ajudar",
+      "te ajudar com algo",
+      "te ajudar hoje",
+      "ajudar você",
+      "estou aqui para conversar"
+    ];
+    if (frasesProibidas.some(f => textoResposta.includes(f))) {
+      textoResposta = ".";
+    }
+
+    setChat((prev) => [...prev, { remetente: "Camila", texto: textoResposta }]);
     setMensagem("");
   };
 

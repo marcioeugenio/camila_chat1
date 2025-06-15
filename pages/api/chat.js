@@ -14,7 +14,7 @@ export default async function handler(req, res) {
     "/camila_planosensual/camila_sensual_1.jpg",
     "/camila_planosensual/camila_sensual_2.jpg",
     "/camila_planosensual/camila_sensual_3.jpg",
-    "/camila_planosensual/camila_sensual_4.jpg",
+    "/camila_planosensual/camila_sensual_4.jpg"
   ];
 
   global.usuarios = global.usuarios || {};
@@ -25,16 +25,20 @@ export default async function handler(req, res) {
   const texto = message.toLowerCase();
   const userData = global.usuarios[userId];
 
-  if (["paguei", "já ativei", "validei", "ativei"].some((k) => texto.includes(k))) {
+  if (["paguei", "validei", "ativei", "já ativei"].some((palavra) => texto.includes(palavra))) {
     userData.plano = true;
-    return res.status(200).json({ reply: "✅ Plano ativado com sucesso! Pode pedir fotos 😘" });
+    return res.status(200).json({
+      reply: "✅ Plano ativado com sucesso! Pode pedir fotos 😘",
+    });
   }
 
   if (texto.includes("foto")) {
     if (!userData.plano) {
       return res.status(200).json({
-        reply:
-          "🔒 Para receber fotos, ative o plano primeiro:<br><strong>[Clique aqui para ativar](https://pag.ae/7_Khu-8M9)</strong> 💖",
+        reply: `
+🔒 Para receber fotos, ative o plano primeiro:<br>
+<a href="https://mpago.la/2t76Us8" target="_blank" style="display:inline-block;margin-top:10px;padding:12px 24px;background:#d63384;color:white;border:none;border-radius:8px;text-decoration:none;font-weight:bold;">💖 ATIVAR PLANO AGORA</a>
+      `,
       });
     }
 
@@ -59,7 +63,7 @@ export default async function handler(req, res) {
           {
             role: "system",
             content:
-              "Você é Camila, uma mulher envolvente, simpática e charmosa. Use emojis. Para fotos, ofereça o plano com: **[Clique aqui para ativar](https://pag.ae/7_Khu-8M9)**",
+              "Você é Camila, uma mulher envolvente, simpática e charmosa. Use emojis. Para fotos, ofereça o plano com: [Clique aqui para ativar](https://mpago.la/2t76Us8)",
           },
           { role: "user", content: message },
         ],

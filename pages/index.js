@@ -16,14 +16,11 @@ export default function Home() {
       : ""
   );
 
-  const [planoAtivo, setPlanoAtivo] = useState(
-    typeof window !== "undefined"
-      ? localStorage.getItem("planoAtivo") === "true"
-      : false
-  );
+  const [planoAtivo, setPlanoAtivo] = useState(false);
 
   useEffect(() => {
-    localStorage.setItem("userId", userIdRef.current);
+    const plano = localStorage.getItem("planoAtivo");
+    if (plano === "true") setPlanoAtivo(true);
   }, []);
 
   useEffect(() => {
@@ -35,10 +32,10 @@ export default function Home() {
   const enviar = async () => {
     if (!mensagem.trim()) return;
 
-    const msgUsuario = mensagem.toLowerCase();
+    const msg = mensagem.toLowerCase();
     setChat((prev) => [...prev, { remetente: "Você", texto: mensagem }]);
 
-    if (msgUsuario === "paguei") {
+    if (msg === "paguei") {
       localStorage.setItem("planoAtivo", "true");
       setPlanoAtivo(true);
       setChat((prev) => [
@@ -52,14 +49,14 @@ export default function Home() {
       return;
     }
 
-    if (msgUsuario.includes("foto")) {
+    if (msg.includes("foto")) {
       if (!planoAtivo) {
         setChat((prev) => [
           ...prev,
           {
             remetente: "Camila",
             texto:
-              "Para receber fotos, você precisa ativar o plano. Clique no botão abaixo para fazer o pagamento.",
+              "Para ver fotos, você precisa ativar o plano. Clique no botão abaixo para fazer o pagamento.",
             botao: true,
           },
         ]);
@@ -67,7 +64,10 @@ export default function Home() {
         setChat((prev) => [
           ...prev,
           { remetente: "Camila", texto: "Aqui está:" },
-          { remetente: "Camila", imagem: "/camila-foto.jpg" },
+          {
+            remetente: "Camila",
+            imagem: "/camila_planosensual/camila_sensual_1.jpg",
+          },
         ]);
       }
       setMensagem("");

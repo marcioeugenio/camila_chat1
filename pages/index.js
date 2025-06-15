@@ -1,4 +1,4 @@
-// ✅ FRONTEND - pages/index.js com imagens ampliáveis
+// ✅ FRONTEND - pages/index.js com imagens ampliáveis e link atualizado
 import { useState, useEffect, useRef } from "react";
 
 export default function Home() {
@@ -156,7 +156,7 @@ export default function Home() {
             {msg.botao && (
               <div>
                 <a
-                  href="https://mpago.la/EXEMPLO_DO_SEU_LINK"
+                  href="https://mpago.la/2LRNRUr"
                   target="_blank"
                   rel="noreferrer"
                 >

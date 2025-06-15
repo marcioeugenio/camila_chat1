@@ -3,7 +3,10 @@ import { useState, useEffect, useRef } from "react";
 export default function Home() {
   const [mensagem, setMensagem] = useState("");
   const [chat, setChat] = useState([
-    { remetente: "Camila", texto: "Oi, eu sou a Camila. Como é seu nome? 😊" },
+    {
+      remetente: "Camila",
+      texto: "Oi, eu sou a Camila. Como é seu nome? 😊",
+    },
   ]);
 
   const chatRef = useRef(null);
@@ -26,7 +29,8 @@ export default function Home() {
   const enviar = async () => {
     if (!mensagem.trim()) return;
 
-    setChat((c) => [...c, { remetente: "Você", texto: mensagem }]);
+    setChat((prev) => [...prev, { remetente: "Você", texto: mensagem }]);
+
     const resposta = await fetch("/api/chat", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -35,8 +39,9 @@ export default function Home() {
         userId: userIdRef.current,
       }),
     });
+
     const data = await resposta.json();
-    setChat((c) => [...c, { remetente: "Camila", texto: data.reply }]);
+    setChat((prev) => [...prev, { remetente: "Camila", texto: data.reply }]);
     setMensagem("");
   };
 
@@ -76,7 +81,11 @@ export default function Home() {
       >
         {chat.map((m, i) => (
           <div key={i} style={{ marginBottom: "0.5rem" }}>
-            <strong style={{ color: m.remetente === "Camila" ? "#d63384" : "#0d6efd" }}>
+            <strong
+              style={{
+                color: m.remetente === "Camila" ? "#d63384" : "#0d6efd",
+              }}
+            >
               {m.remetente}:
             </strong>{" "}
             <span dangerouslySetInnerHTML={{ __html: m.texto }} />

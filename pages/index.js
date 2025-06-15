@@ -9,11 +9,14 @@ export default function Home() {
   const [input, setInput] = useState('');
   const chatRef = useRef(null);
 
-  // 🔁 Rola automaticamente para o fim do chat quando há nova mensagem
+  // 🔁 Auto scroll após renderização de mensagens
   useEffect(() => {
-    if (chatRef.current) {
-      chatRef.current.scrollTop = chatRef.current.scrollHeight;
-    }
+    const timeout = setTimeout(() => {
+      if (chatRef.current) {
+        chatRef.current.scrollTop = chatRef.current.scrollHeight;
+      }
+    }, 50); // espera DOM atualizar
+    return () => clearTimeout(timeout);
   }, [messages]);
 
   const sendMessage = async (e) => {

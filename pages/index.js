@@ -1,4 +1,4 @@
-// ✅ FRONTEND - pages/index.js (versão cuidadosa, mantendo tudo que funciona)
+// ✅ FRONTEND - pages/index.js com imagens ampliáveis
 import { useState, useEffect, useRef } from "react";
 
 export default function Home() {
@@ -6,6 +6,7 @@ export default function Home() {
   const [chat, setChat] = useState([]);
   const [fotoIndex, setFotoIndex] = useState(1);
   const [planoAtivo, setPlanoAtivo] = useState(false);
+  const [modalImagem, setModalImagem] = useState(null);
 
   const chatRef = useRef(null);
   const userIdRef = useRef(
@@ -24,6 +25,14 @@ export default function Home() {
       chatRef.current.scrollTop = chatRef.current.scrollHeight;
     }
   }, [chat]);
+
+  const abrirImagem = (src) => {
+    setModalImagem(src);
+  };
+
+  const fecharImagem = () => {
+    setModalImagem(null);
+  };
 
   const enviar = async () => {
     if (!mensagem.trim()) return;
@@ -105,11 +114,13 @@ export default function Home() {
         <img
           src="/camila_perfil.jpg"
           alt="Camila"
+          onClick={() => abrirImagem("/camila_perfil.jpg")}
           style={{
             width: 40,
             height: 40,
             borderRadius: "50%",
             border: "2px solid white",
+            cursor: "pointer",
           }}
         />
         <div>
@@ -133,12 +144,17 @@ export default function Home() {
               <img
                 src={msg.imagem}
                 alt="Foto da Camila"
-                style={{ maxWidth: "200px", borderRadius: "8px", marginTop: "0.5rem" }}
+                onClick={() => abrirImagem(msg.imagem)}
+                style={{
+                  maxWidth: "200px",
+                  borderRadius: "8px",
+                  marginTop: "0.5rem",
+                  cursor: "pointer",
+                }}
               />
             )}
             {msg.botao && (
               <div>
-                {/* ⚠️ MANTIDO exatamente como estava no código anterior, link Mercado Pago */}
                 <a
                   href="https://mpago.la/EXEMPLO_DO_SEU_LINK"
                   target="_blank"
@@ -165,6 +181,36 @@ export default function Home() {
           Enviar
         </button>
       </div>
+
+      {modalImagem && (
+        <div
+          onClick={fecharImagem}
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            width: "100vw",
+            height: "100vh",
+            background: "rgba(0,0,0,0.8)",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            zIndex: 9999,
+            cursor: "pointer",
+          }}
+        >
+          <img
+            src={modalImagem}
+            alt="Imagem ampliada"
+            style={{
+              maxWidth: "90%",
+              maxHeight: "90%",
+              borderRadius: "12px",
+              boxShadow: "0 0 20px #fff",
+            }}
+          />
+        </div>
+      )}
     </div>
   );
 }

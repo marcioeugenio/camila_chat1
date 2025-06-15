@@ -15,7 +15,7 @@ export default function Home() {
       : ""
   );
 
-  const planoAtivo = useRef(
+  const [planoAtivo, setPlanoAtivo] = useState(
     typeof window !== "undefined"
       ? localStorage.getItem("planoAtivo") === "true"
       : false
@@ -38,10 +38,10 @@ export default function Home() {
     const novaMensagem = { remetente: "Você", texto: mensagem };
     setChat((prev) => [...prev, novaMensagem]);
 
-    // Ativa plano somente se digitar exatamente "paguei"
+    // Ativa plano com "paguei"
     if (msgUsuario === "paguei") {
       localStorage.setItem("planoAtivo", "true");
-      planoAtivo.current = true;
+      setPlanoAtivo(true);
       setChat((prev) => [
         ...prev,
         {
@@ -53,8 +53,8 @@ export default function Home() {
       return;
     }
 
-    // Se pedir foto sem plano, oferece botão de pagamento
-    if (!planoAtivo.current && msgUsuario.includes("foto")) {
+    // Se pedir foto sem plano, oferece botão
+    if (!planoAtivo && msgUsuario.includes("foto")) {
       setChat((prev) => [
         ...prev,
         {
@@ -68,13 +68,30 @@ export default function Home() {
       return;
     }
 
+    // Se plano ativo e pedir foto, mostra imagem
+    if (planoAtivo && msgUsuario.includes("foto")) {
+      setChat((prev) => [
+        ...prev,
+        {
+          remetente: "Camila",
+          texto: "Aqui está:",
+        },
+        {
+          remetente: "Camila",
+          texto:
+            '<img src="/camila-foto.jpg" alt="Foto da Camila" style="max-width:100%; border-radius:8px;" />',
+        },
+      ]);
+      setMensagem("");
+      return;
+    }
+
     const resposta = await fetch("/api/chat", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         message: mensagem,
         userId: userIdRef.current,
-        planoAtivo: planoAtivo.current,
       }),
     });
 
@@ -151,7 +168,7 @@ export default function Home() {
             </strong>
             <span dangerouslySetInnerHTML={{ __html: m.texto }} />
 
-            {/* Botão real de pagamento */}
+            {/* Botão Mercado Pago */}
             {m.botao && (
               <a
                 href="https://mpago.la/1koBzop"

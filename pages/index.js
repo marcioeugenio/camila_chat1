@@ -10,7 +10,6 @@ export default function Home() {
   ]);
 
   const chatRef = useRef(null);
-
   const userIdRef = useRef(
     typeof window !== "undefined"
       ? localStorage.getItem("userId") || crypto.randomUUID()
@@ -55,10 +54,9 @@ export default function Home() {
       return;
     }
 
-    // SE PEDIR FOTO
+    // Se pedir foto
     if (msgUsuario.includes("foto")) {
       if (!planoAtivo) {
-        // Plano ainda não ativado — mostrar botão de pagamento
         setChat((prev) => [
           ...prev,
           {
@@ -69,7 +67,6 @@ export default function Home() {
           },
         ]);
       } else {
-        // Plano já ativado — mostrar imagem
         setChat((prev) => [
           ...prev,
           {
@@ -87,7 +84,7 @@ export default function Home() {
       return;
     }
 
-    // Chat normal com IA
+    // Resposta normal da IA
     const resposta = await fetch("/api/chat", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -168,9 +165,10 @@ export default function Home() {
             >
               {m.remetente}:
             </strong>
+
             <span dangerouslySetInnerHTML={{ __html: m.texto }} />
 
-            {/* Botão de pagamento Mercado Pago */}
+            {/* Botão de pagamento */}
             {m.botao && (
               <a
                 href="https://mpago.la/1koBzop"

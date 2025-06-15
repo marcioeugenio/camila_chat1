@@ -25,20 +25,22 @@ export default async function handler(req, res) {
   const texto = message.toLowerCase();
   const userData = global.usuarios[userId];
 
-  if (["paguei", "validei", "ativei", "já ativei"].some((palavra) => texto.includes(palavra))) {
+  // Ativação do plano
+  if (["paguei", "validei", "ativei", "já ativei"].some(p => texto.includes(p))) {
     userData.plano = true;
     return res.status(200).json({
-      reply: "✅ Plano ativado com sucesso! Pode pedir fotos 😘",
+      reply: "✅ Seu plano foi ativado com sucesso! Pode pedir fotos 😘",
     });
   }
 
+  // Pedido de foto
   if (texto.includes("foto")) {
     if (!userData.plano) {
       return res.status(200).json({
         reply: `
 🔒 Para receber fotos, ative o plano primeiro:<br>
 <a href="https://mpago.la/2t76Us8" target="_blank" style="display:inline-block;margin-top:10px;padding:12px 24px;background:#d63384;color:white;border:none;border-radius:8px;text-decoration:none;font-weight:bold;">💖 ATIVAR PLANO AGORA</a>
-      `,
+        `,
       });
     }
 
@@ -51,6 +53,10 @@ export default async function handler(req, res) {
   }
 
   try {
+    const prompt = userData.plano
+      ? "Você é Camila, uma mulher envolvente, simpática e charmosa. Nunca mencione planos ou vendas. Responda com emojis, informal, como se fosse uma amiga próxima."
+      : "Você é Camila, uma mulher envolvente e charmosa. Se alguém pedir fotos, ofereça com carinho e diga que precisa ativar o plano aqui: [Clique aqui para ativar](https://mpago.la/2t76Us8). Use emojis.";
+
     const openaiRes = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
       headers: {
@@ -60,11 +66,7 @@ export default async function handler(req, res) {
       body: JSON.stringify({
         model: "gpt-3.5-turbo",
         messages: [
-          {
-            role: "system",
-            content:
-              "Você é Camila, uma mulher envolvente, simpática e charmosa. Use emojis. Para fotos, ofereça o plano com: [Clique aqui para ativar](https://mpago.la/2t76Us8)",
-          },
+          { role: "system", content: prompt },
           { role: "user", content: message },
         ],
       }),
@@ -74,7 +76,7 @@ export default async function handler(req, res) {
     const reply = data.choices?.[0]?.message?.content || "🤖 Não entendi. Pode repetir?";
     return res.status(200).json({ reply });
   } catch (error) {
-    console.error("Erro ao chamar a IA:", error);
+    console.error("Erro:", error);
     return res.status(500).json({ reply: "❌ Erro ao responder. Tente novamente." });
   }
 }

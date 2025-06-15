@@ -1,101 +1,105 @@
-import { useState, useEffect, useRef } from 'react';
-import Head from 'next/head';
-import Image from 'next/image';
+import { useState, useEffect, useRef } from "react";
 
 export default function Home() {
-  const [messages, setMessages] = useState([
-    { sender: 'camila', text: 'Oi, eu sou a Camila. Como é seu nome? 😊' }
+  const [mensagem, setMensagem] = useState("");
+  const [chat, setChat] = useState([
+    { remetente: "Camila", texto: "Oi, eu sou a Camila. Como é seu nome? 😊" },
   ]);
-  const [input, setInput] = useState('');
+
   const chatRef = useRef(null);
+  const userIdRef = useRef(
+    typeof window !== "undefined"
+      ? localStorage.getItem("userId") || crypto.randomUUID()
+      : ""
+  );
 
-  // 🔁 Auto scroll após renderização de mensagens
   useEffect(() => {
-    const timeout = setTimeout(() => {
-      if (chatRef.current) {
-        chatRef.current.scrollTop = chatRef.current.scrollHeight;
-      }
-    }, 50); // espera DOM atualizar
-    return () => clearTimeout(timeout);
-  }, [messages]);
+    localStorage.setItem("userId", userIdRef.current);
+  }, []);
 
-  const sendMessage = async (e) => {
-    e.preventDefault();
-    if (!input.trim()) return;
-
-    const userMessage = { sender: 'user', text: input };
-    setMessages((prev) => [...prev, userMessage]);
-    setInput('');
-
-    try {
-      const res = await fetch('/api/chat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: input })
-      });
-
-      const data = await res.json();
-      const botReply = { sender: 'camila', text: data.reply || 'Erro ao responder.' };
-      setMessages((prev) => [...prev, botReply]);
-    } catch (err) {
-      setMessages((prev) => [
-        ...prev,
-        { sender: 'camila', text: '❌ Erro ao conectar com o servidor.' }
-      ]);
+  useEffect(() => {
+    if (chatRef.current) {
+      chatRef.current.scrollTop = chatRef.current.scrollHeight;
     }
+  }, [chat]);
+
+  const enviar = async () => {
+    if (!mensagem.trim()) return;
+
+    setChat((c) => [...c, { remetente: "Você", texto: mensagem }]);
+    const resposta = await fetch("/api/chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        message: mensagem,
+        userId: userIdRef.current,
+      }),
+    });
+    const data = await resposta.json();
+    setChat((c) => [...c, { remetente: "Camila", texto: data.reply }]);
+    setMensagem("");
   };
 
   return (
-    <>
-      <Head>
-        <title>Camila - Sua Acompanhante Virtual</title>
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css" />
-      </Head>
-      <main className="container">
-        <div style={{
-          background: '#4CAF50',
-          padding: '1rem',
-          borderRadius: '12px',
-          marginBottom: '1rem',
-          color: 'white'
-        }}>
-          <Image src="/camila_perfil.jpg" alt="Camila" width={80} height={80} style={{ borderRadius: '50%', border: '2px solid #d63384' }} />
-          <h2>💬 Camila <small>Online agora</small></h2>
-        </div>
-
-        <div
-          id="chat"
-          ref={chatRef}
+    <main style={{ maxWidth: 600, margin: "2rem auto", padding: "1rem" }}>
+      <div style={{ textAlign: "center", marginBottom: "1rem" }}>
+        <img
+          src="/camila_perfil.jpg"
+          alt="Camila"
           style={{
-            maxHeight: '400px',
-            overflowY: 'auto',
-            background: 'white',
-            border: '1px solid #ccc',
-            padding: '1rem',
-            borderRadius: '12px',
-            marginBottom: '1rem'
+            width: 80,
+            borderRadius: "50%",
+            border: "2px solid #d63384",
+            marginBottom: "0.5rem",
           }}
-        >
-          {messages.map((msg, idx) => (
-            <div key={idx} style={{ color: msg.sender === 'camila' ? '#d63384' : '#0d6efd', marginBottom: '0.8rem' }}>
-              <strong>{msg.sender === 'camila' ? 'Camila' : 'Você'}:</strong>{' '}
-              <span dangerouslySetInnerHTML={{ __html: msg.text }} />
-            </div>
-          ))}
-        </div>
+        />
+        <h2>
+          💬 <span style={{ color: "#d63384" }}>Camila</span>{" "}
+          <small style={{ fontSize: "0.8rem", color: "gray" }}>
+            Online agora
+          </small>
+        </h2>
+      </div>
 
-        <form onSubmit={sendMessage} className="grid">
-          <input
-            type="text"
-            placeholder="Digite sua mensagem..."
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            required
-          />
-          <button type="submit">Enviar</button>
-        </form>
-      </main>
-    </>
+      <div
+        id="chat"
+        ref={chatRef}
+        style={{
+          maxHeight: 400,
+          overflowY: "auto",
+          background: "#fff",
+          padding: "1rem",
+          borderRadius: "10px",
+          marginBottom: "1rem",
+          border: "1px solid #ccc",
+        }}
+      >
+        {chat.map((m, i) => (
+          <div key={i} style={{ marginBottom: "0.5rem" }}>
+            <strong style={{ color: m.remetente === "Camila" ? "#d63384" : "#0d6efd" }}>
+              {m.remetente}:
+            </strong>{" "}
+            <span dangerouslySetInnerHTML={{ __html: m.texto }} />
+          </div>
+        ))}
+      </div>
+
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          enviar();
+        }}
+        style={{ display: "flex", gap: "0.5rem" }}
+      >
+        <input
+          type="text"
+          placeholder="Digite sua mensagem..."
+          value={mensagem}
+          onChange={(e) => setMensagem(e.target.value)}
+          style={{ flex: 1, padding: "0.5rem" }}
+        />
+        <button type="submit">Enviar</button>
+      </form>
+    </main>
   );
 }

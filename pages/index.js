@@ -3,12 +3,8 @@ import { useState, useEffect, useRef } from "react";
 export default function Home() {
   const [mensagem, setMensagem] = useState("");
   const [chat, setChat] = useState([
-    {
-      remetente: "Camila",
-      texto: "Oi, eu sou a Camila. Como é seu nome? 😊",
-    },
+    { remetente: "Camila", texto: "Oi, eu sou a Camila. Como é seu nome? 😊" },
   ]);
-
   const chatRef = useRef(null);
   const userIdRef = useRef(
     typeof window !== "undefined"
@@ -67,27 +63,43 @@ export default function Home() {
       </div>
 
       <div
-        id="chat"
         ref={chatRef}
         style={{
           maxHeight: 400,
           overflowY: "auto",
-          background: "#fff",
+          background: "#f8f8f8",
           padding: "1rem",
           borderRadius: "10px",
           marginBottom: "1rem",
           border: "1px solid #ccc",
+          display: "flex",
+          flexDirection: "column",
+          gap: "0.5rem",
         }}
       >
         {chat.map((m, i) => (
-          <div key={i} style={{ marginBottom: "0.5rem" }}>
+          <div
+            key={i}
+            style={{
+              alignSelf: m.remetente === "Você" ? "flex-end" : "flex-start",
+              background: m.remetente === "Você" ? "#dcf8c6" : "#fff",
+              color: "#000",
+              padding: "0.6rem 1rem",
+              borderRadius: "16px",
+              maxWidth: "75%",
+              boxShadow: "0 1px 2px rgba(0,0,0,0.1)",
+              whiteSpace: "pre-wrap",
+            }}
+          >
             <strong
               style={{
                 color: m.remetente === "Camila" ? "#d63384" : "#0d6efd",
+                display: "block",
+                marginBottom: 4,
               }}
             >
               {m.remetente}:
-            </strong>{" "}
+            </strong>
             <span dangerouslySetInnerHTML={{ __html: m.texto }} />
           </div>
         ))}
@@ -105,9 +117,25 @@ export default function Home() {
           placeholder="Digite sua mensagem..."
           value={mensagem}
           onChange={(e) => setMensagem(e.target.value)}
-          style={{ flex: 1, padding: "0.5rem" }}
+          style={{
+            flex: 1,
+            padding: "0.6rem 1rem",
+            borderRadius: "8px",
+            border: "1px solid #ccc",
+          }}
         />
-        <button type="submit">Enviar</button>
+        <button
+          type="submit"
+          style={{
+            padding: "0 1rem",
+            background: "#0d6efd",
+            color: "white",
+            border: "none",
+            borderRadius: "8px",
+          }}
+        >
+          Enviar
+        </button>
       </form>
     </main>
   );

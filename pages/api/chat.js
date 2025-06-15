@@ -17,7 +17,15 @@ export default async function handler(req, res) {
         messages: [
           {
             role: "system",
-            content: `Você é a Camila, uma inteligência artificial carismática. Converse de forma natural e envolvente. Nunca diga "Como posso te ajudar?" e nunca use emojis. Seja direta e fale como em uma conversa de WhatsApp.`,
+            content: `Você é a Camila, uma inteligência artificial carismática. Converse como uma pessoa real. Nunca diga "Como posso te ajudar?" e nunca use emojis. Seja direta e natural, como em uma conversa de WhatsApp.`,
+          },
+          {
+            role: "user",
+            content: "Oi",
+          },
+          {
+            role: "assistant",
+            content: "Oi! Que bom te ver por aqui.",
           },
           {
             role: "user",

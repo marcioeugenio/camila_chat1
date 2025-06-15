@@ -2,12 +2,9 @@ import { useState, useEffect, useRef } from "react";
 
 export default function Home() {
   const [mensagem, setMensagem] = useState("");
-  const [chat, setChat] = useState([
-    {
-      remetente: "Camila",
-      texto: "Oi. Eu sou a Camila. Pode falar comigo quando quiser.",
-    },
-  ]);
+  const [chat, setChat] = useState([]);
+  const [fotoIndex, setFotoIndex] = useState(1);
+  const [planoAtivo, setPlanoAtivo] = useState(false);
 
   const chatRef = useRef(null);
   const userIdRef = useRef(
@@ -15,8 +12,6 @@ export default function Home() {
       ? localStorage.getItem("userId") || crypto.randomUUID()
       : ""
   );
-
-  const [planoAtivo, setPlanoAtivo] = useState(false);
 
   useEffect(() => {
     const plano = localStorage.getItem("planoAtivo");
@@ -61,14 +56,20 @@ export default function Home() {
           },
         ]);
       } else {
+        const index = fotoIndex;
+        const novaFoto = `/camila_planosensual/camila_sensual_${index}.jpg`;
+
         setChat((prev) => [
           ...prev,
           { remetente: "Camila", texto: "Aqui está:" },
           {
             remetente: "Camila",
-            imagem: "/camila_planosensual/camila_sensual_1.jpg",
+            imagem: novaFoto,
           },
         ]);
+
+        const proxima = index >= 6 ? 1 : index + 1;
+        setFotoIndex(proxima);
       }
       setMensagem("");
       return;
@@ -80,6 +81,7 @@ export default function Home() {
       body: JSON.stringify({
         message: mensagem,
         userId: userIdRef.current,
+        planoAtivo: planoAtivo,
       }),
     });
 
@@ -119,120 +121,49 @@ export default function Home() {
 
       <div
         ref={chatRef}
-        style={{
-          flex: 1,
-          overflowY: "auto",
-          padding: "1rem",
-          background: "#e5ddd5",
-          display: "flex",
-          flexDirection: "column",
-          gap: "0.5rem",
-        }}
+        style={{ flex: 1, overflowY: "auto", padding: "1rem", background: "#eee" }}
       >
-        {chat.map((m, i) => (
-          <div
-            key={i}
-            style={{
-              alignSelf: m.remetente === "Você" ? "flex-end" : "flex-start",
-              background: m.remetente === "Você" ? "#dcf8c6" : "#fff",
-              color: "#000",
-              padding: "0.6rem 1rem",
-              borderRadius: "8px",
-              maxWidth: "75%",
-              boxShadow: "0 1px 2px rgba(0,0,0,0.2)",
-              whiteSpace: "pre-wrap",
-            }}
-          >
-            <strong
-              style={{
-                color: m.remetente === "Camila" ? "#075E54" : "#0d6efd",
-                display: "block",
-                marginBottom: 4,
-              }}
-            >
-              {m.remetente}:
+        {chat.map((msg, i) => (
+          <div key={i} style={{ marginBottom: "1rem" }}>
+            <strong style={{ color: msg.remetente === "Camila" ? "#d63384" : "#0d6efd" }}>
+              {msg.remetente}:
             </strong>
-
-            {m.imagem ? (
-              <div style={{ marginTop: "0.5rem" }}>
-                <img
-                  src={m.imagem}
-                  alt="Foto da Camila"
-                  style={{
-                    maxWidth: "100%",
-                    borderRadius: "8px",
-                    border: "1px solid #ccc",
-                    display: "block",
-                  }}
-                />
-              </div>
-            ) : (
-              <span>{m.texto}</span>
+            {msg.texto && <div>{msg.texto}</div>}
+            {msg.imagem && (
+              <img
+                src={msg.imagem}
+                alt="Foto da Camila"
+                style={{ maxWidth: "200px", borderRadius: "8px", marginTop: "0.5rem" }}
+              />
             )}
-
-            {m.botao && (
-              <a
-                href="https://mpago.la/1koBzop"
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{
-                  marginTop: "0.5rem",
-                  background: "#25D366",
-                  color: "#fff",
-                  border: "none",
-                  padding: "0.5rem 1rem",
-                  borderRadius: "20px",
-                  textDecoration: "none",
-                  display: "inline-block",
-                  cursor: "pointer",
-                }}
-              >
-                Ativar plano
-              </a>
+            {msg.botao && (
+              <div>
+                <a
+                  href="https://pag.ae/7_KikNwX9"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  <button style={{ marginTop: "0.5rem" }}>Ativar Plano Sensual</button>
+                </a>
+              </div>
             )}
           </div>
         ))}
       </div>
 
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          enviar();
-        }}
-        style={{
-          display: "flex",
-          padding: "0.75rem",
-          borderTop: "1px solid #ccc",
-          background: "#fff",
-        }}
-      >
+      <div style={{ padding: "1rem", background: "#fff" }}>
         <input
           type="text"
-          placeholder="Digite sua mensagem..."
           value={mensagem}
           onChange={(e) => setMensagem(e.target.value)}
-          style={{
-            flex: 1,
-            padding: "0.6rem 1rem",
-            borderRadius: "20px",
-            border: "1px solid #ccc",
-            marginRight: "0.5rem",
-          }}
+          onKeyDown={(e) => e.key === "Enter" && enviar()}
+          placeholder="Digite sua mensagem..."
+          style={{ width: "80%", padding: "0.5rem" }}
         />
-        <button
-          type="submit"
-          style={{
-            background: "#075E54",
-            color: "#fff",
-            padding: "0.6rem 1rem",
-            borderRadius: "20px",
-            border: "none",
-            cursor: "pointer",
-          }}
-        >
+        <button onClick={enviar} style={{ padding: "0.5rem 1rem" }}>
           Enviar
         </button>
-      </form>
+      </div>
     </div>
   );
 }

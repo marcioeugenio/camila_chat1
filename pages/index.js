@@ -5,7 +5,7 @@ export default function Home() {
   const [chat, setChat] = useState([
     {
       remetente: "Camila",
-      texto: "Oi! Sou a Camila 💬 Como posso te ajudar?",
+      texto: "Oi. Eu sou a Camila. Pode falar comigo quando quiser.",
     },
   ]);
   const chatRef = useRef(null);
@@ -38,30 +38,30 @@ export default function Home() {
     const novaMensagem = { remetente: "Você", texto: mensagem };
     setChat((prev) => [...prev, novaMensagem]);
 
-    // Ativa plano se mensagem contém palavras-chave
-    if (msgUsuario.includes("ativar plano") || msgUsuario.includes("assinar")) {
+    // Ativa plano somente se digitar exatamente "paguei"
+    if (msgUsuario === "paguei") {
       localStorage.setItem("planoAtivo", "true");
       planoAtivo.current = true;
       setChat((prev) => [
         ...prev,
         {
           remetente: "Camila",
-          texto:
-            "✅ Seu plano foi ativado com sucesso! Pode pedir fotos 😘",
+          texto: "Plano ativado com sucesso. Agora posso te mostrar tudo.",
         },
       ]);
       setMensagem("");
       return;
     }
 
-    // Evita ficar oferecendo o plano após ativar
+    // Se pedir foto sem plano, oferece botão de pagamento
     if (!planoAtivo.current && msgUsuario.includes("foto")) {
       setChat((prev) => [
         ...prev,
         {
           remetente: "Camila",
           texto:
-            "🚫 Você precisa ativar o plano para receber fotos. Envie: *Ativar plano*",
+            "Para receber fotos, você precisa ativar o plano. Clique no botão abaixo para fazer o pagamento.",
+          botao: true,
         },
       ]);
       setMensagem("");
@@ -150,6 +150,28 @@ export default function Home() {
               {m.remetente}:
             </strong>
             <span dangerouslySetInnerHTML={{ __html: m.texto }} />
+
+            {/* Botão real de pagamento */}
+            {m.botao && (
+              <a
+                href="https://mpago.la/1koBzop"
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  marginTop: "0.5rem",
+                  background: "#25D366",
+                  color: "#fff",
+                  border: "none",
+                  padding: "0.5rem 1rem",
+                  borderRadius: "20px",
+                  textDecoration: "none",
+                  display: "inline-block",
+                  cursor: "pointer",
+                }}
+              >
+                Ativar plano
+              </a>
+            )}
           </div>
         ))}
       </div>

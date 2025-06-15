@@ -38,7 +38,6 @@ export default function Home() {
     const msgUsuario = mensagem.toLowerCase();
     setChat((prev) => [...prev, { remetente: "Você", texto: mensagem }]);
 
-    // Ativação do plano
     if (msgUsuario === "paguei") {
       localStorage.setItem("planoAtivo", "true");
       setPlanoAtivo(true);
@@ -53,7 +52,6 @@ export default function Home() {
       return;
     }
 
-    // Pedido de foto
     if (msgUsuario.includes("foto")) {
       if (!planoAtivo) {
         setChat((prev) => [
@@ -68,22 +66,14 @@ export default function Home() {
       } else {
         setChat((prev) => [
           ...prev,
-          {
-            remetente: "Camila",
-            texto: "Aqui está:",
-          },
-          {
-            remetente: "Camila",
-            texto:
-              '<img src="/camila-foto.jpg" alt="Foto da Camila" style="max-width:100%; border-radius:8px;" />',
-          },
+          { remetente: "Camila", texto: "Aqui está:" },
+          { remetente: "Camila", imagem: "/camila-foto.jpg" },
         ]);
       }
       setMensagem("");
       return;
     }
 
-    // Mensagem normal
     const resposta = await fetch("/api/chat", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -163,7 +153,19 @@ export default function Home() {
               {m.remetente}:
             </strong>
 
-            <span dangerouslySetInnerHTML={{ __html: m.texto }} />
+            {m.imagem ? (
+              <img
+                src={m.imagem}
+                alt="Imagem"
+                style={{
+                  maxWidth: "100%",
+                  borderRadius: "8px",
+                  marginTop: "0.5rem",
+                }}
+              />
+            ) : (
+              <span>{m.texto}</span>
+            )}
 
             {m.botao && (
               <a

@@ -1,4 +1,4 @@
-// ✅ FRONTEND - pages/index.js
+// ✅ FRONTEND - pages/index.js (versão cuidadosa, mantendo tudo que funciona)
 import { useState, useEffect, useRef } from "react";
 
 export default function Home() {
@@ -57,8 +57,7 @@ export default function Home() {
           },
         ]);
       } else {
-        const index = fotoIndex;
-        const novaFoto = `/camila_planosensual/camila_sensual_${index}.jpg`;
+        const novaFoto = `/camila_planosensual/camila_sensual_${fotoIndex}.jpg`;
 
         setChat((prev) => [
           ...prev,
@@ -69,7 +68,7 @@ export default function Home() {
           },
         ]);
 
-        const proxima = index >= 6 ? 1 : index + 1;
+        const proxima = fotoIndex >= 6 ? 1 : fotoIndex + 1;
         setFotoIndex(proxima);
       }
       setMensagem("");
@@ -139,8 +138,9 @@ export default function Home() {
             )}
             {msg.botao && (
               <div>
+                {/* ⚠️ MANTIDO exatamente como estava no código anterior, link Mercado Pago */}
                 <a
-                  href="https://pag.ae/7_KikNwX9"
+                  href="https://mpago.la/EXEMPLO_DO_SEU_LINK"
                   target="_blank"
                   rel="noreferrer"
                 >

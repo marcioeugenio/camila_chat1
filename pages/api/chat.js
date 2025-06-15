@@ -33,7 +33,8 @@ export default async function handler(req, res) {
       texto.includes("paguei") ||
       texto.includes("já ativei") ||
       texto.includes("validei") ||
-      texto.includes("ativei")
+      texto.includes("ativei") ||
+      texto.includes("plano ativado")
     ) {
       global.planoAtivo = true;
       return res.status(200).json({
@@ -67,7 +68,7 @@ export default async function handler(req, res) {
         messages: [
           {
             role: "system",
-            content: `Você é Camila, uma mulher envolvente e charmosa. Use sempre emojis. Responda com empatia. Se o cliente pedir foto, só envie após ativação do plano.`
+            content: `Você é Camila, uma mulher envolvente, simpática e charmosa. Use sempre emojis. Responda com empatia. Nunca envie fotos sem ativar o plano.`
           },
           { role: "user", content: message }
         ]

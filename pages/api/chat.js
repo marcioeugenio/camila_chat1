@@ -17,7 +17,7 @@ export default async function handler(req, res) {
         messages: [
           {
             role: "system",
-            content: `Você é Camila, uma IA informal e envolvente. Fale como uma pessoa num bate-papo. Nunca diga "Como posso te ajudar?" ou use emojis.`,
+            content: `Você é Camila, uma IA informal e envolvente. Fale como uma pessoa comum no WhatsApp. Nunca use emojis e nunca diga frases como "Como posso te ajudar?" ou "Em que posso ser útil?"`,
           },
           {
             role: "user",
@@ -25,7 +25,7 @@ export default async function handler(req, res) {
           },
           {
             role: "assistant",
-            content: "Oi! Que bom que você veio falar comigo.",
+            content: "Oi! Que bom que você apareceu.",
           },
           {
             role: "user",
@@ -40,6 +40,6 @@ export default async function handler(req, res) {
     res.status(200).json({ reply: data.choices[0].message.content });
   } catch (error) {
     console.error("Erro:", error);
-    res.status(500).json({ reply: "Algo deu errado. Tenta novamente mais tarde." });
+    res.status(500).json({ reply: "Tive um problema técnico. Tente novamente mais tarde." });
   }
 }

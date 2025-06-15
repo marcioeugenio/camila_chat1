@@ -154,15 +154,18 @@ export default function Home() {
             </strong>
 
             {m.imagem ? (
-              <img
-                src={m.imagem}
-                alt="Imagem"
-                style={{
-                  maxWidth: "100%",
-                  borderRadius: "8px",
-                  marginTop: "0.5rem",
-                }}
-              />
+              <div style={{ marginTop: "0.5rem" }}>
+                <img
+                  src={m.imagem}
+                  alt="Foto da Camila"
+                  style={{
+                    maxWidth: "100%",
+                    borderRadius: "8px",
+                    border: "1px solid #ccc",
+                    display: "block",
+                  }}
+                />
+              </div>
             ) : (
               <span>{m.texto}</span>
             )}

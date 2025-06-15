@@ -1,4 +1,4 @@
-// ✅ FRONTEND - pages/index.js com desbloqueio flexível
+// ✅ FRONTEND - pages/index.js com limpeza total para iPhone
 import { useState, useEffect, useRef } from "react";
 
 export default function Home() {
@@ -34,16 +34,25 @@ export default function Home() {
     setModalImagem(null);
   };
 
+  const limparTexto = (texto) =>
+    texto
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[̀-ͯ]/g, "")
+      .replace(/[^a-z\s]/gi, "")
+      .replace(/\s+/g, " ")
+      .trim();
+
   const enviar = async () => {
     if (!mensagem.trim()) return;
 
-    const msg = mensagem.trim().toLowerCase();
+    const msg = limparTexto(mensagem);
 
     setChat((prev) => [...prev, { remetente: "Você", texto: mensagem }]);
 
     const frasesLiberaPlano = [
       "paguei",
-      "já paguei",
+      "ja paguei",
       "eu paguei",
       "paguei sim",
       "paguei agora",

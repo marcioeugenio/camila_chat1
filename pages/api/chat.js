@@ -1,45 +1,72 @@
-export default async function handler(req, res) {
-  if (req.method !== "POST") {
-    return res.status(405).json({ error: "Método não permitido" });
+const chat = document.getElementById("chat");
+const input = document.getElementById("input");
+const sendButton = document.getElementById("send");
+
+function addMessage(sender, text, isHTML = false) {
+  const message = document.createElement("div");
+  message.classList.add("message");
+
+  const senderSpan = document.createElement("span");
+  senderSpan.classList.add(sender === "Camila" ? "camila" : "user");
+  senderSpan.textContent = `${sender}:`;
+
+  const textPara = document.createElement("p");
+  if (isHTML) {
+    textPara.innerHTML = text;
+  } else {
+    textPara.textContent = text;
   }
 
-  const { message, userId } = req.body;
+  message.appendChild(senderSpan);
+  message.appendChild(textPara);
+  chat.appendChild(message);
+  chat.scrollTop = chat.scrollHeight;
+}
 
-  try {
-    const resposta = await fetch("https://api.openai.com/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
-      },
-      body: JSON.stringify({
-        model: "gpt-3.5-turbo",
-        messages: [
-          {
-            role: "system",
-            content: `Você é Camila, uma IA carismática e envolvente. Responda de forma natural, como uma mulher falando no WhatsApp. Nunca diga frases como "Como posso te ajudar?", "Como posso te auxiliar?", "Posso te ajudar com algo?", "Em que posso ajudar?" nem use emojis.`,
-          },
-          {
-            role: "user",
-            content: "Oi",
-          },
-          {
-            role: "assistant",
-            content: "Oi! Que bom ver você por aqui.",
-          },
-          {
-            role: "user",
-            content: message,
-          },
-        ],
-        user: userId,
-      }),
-    });
+sendButton.addEventListener("click", sendMessage);
+input.addEventListener("keydown", (e) => {
+  if (e.key === "Enter") sendMessage();
+});
 
-    const data = await resposta.json();
-    res.status(200).json({ reply: data.choices[0].message.content });
-  } catch (error) {
-    console.error("Erro:", error);
-    res.status(500).json({ reply: "Algo deu errado, tenta de novo em instantes." });
+function sendMessage() {
+  const userMessage = input.value.trim();
+  if (userMessage === "") return;
+
+  addMessage("Você", userMessage);
+  input.value = "";
+
+  setTimeout(() => {
+    handleResponse(userMessage);
+  }, 600);
+}
+
+function handleResponse(userMessage) {
+  const msg = userMessage.toLowerCase();
+
+  if (msg.includes("paguei")) {
+    addMessage("Camila", "Plano ativado com sucesso. Agora posso te mostrar tudo.");
+    return;
   }
+
+  if (msg.includes("foto")) {
+    addMessage("Camila", "Aqui está:");
+    addMessage(
+      "Camila",
+      '<img src="/img/picante/camila_sensual_4.jpg" alt="Foto da Camila" style="max-width: 100%; border-radius: 12px;" />',
+      true
+    );
+    return;
+  }
+
+  // Respostas normais da Camila (sem ficar oferecendo ajuda)
+  const respostas = [
+    "Estou aqui para te acompanhar 😉",
+    "Pode perguntar o que quiser...",
+    "Você parece interessante...",
+    "Que bom ter você aqui comigo ❤️",
+    "Fiquei curiosa agora..."
+  ];
+
+  const aleatoria = respostas[Math.floor(Math.random() * respostas.length)];
+  addMessage("Camila", aleatoria);
 }
